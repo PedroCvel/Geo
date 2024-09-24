@@ -1,0 +1,66 @@
+<form id="coordinatesForm" action="/submit-room-coordinates" method="POST">
+    <h3>Extremidade 1</h3>
+    Latitude: <input type="text" id="lat1" name="lat1">
+    Longitude: <input type="text" id="lon1" name="lon1"><br>
+
+    <h3>Extremidade 2</h3>
+    Latitude: <input type="text" id="lat2" name="lat2">
+    Longitude: <input type="text" id="lon2" name="lon2"><br>
+
+    <h3>Extremidade 3</h3>
+    Latitude: <input type="text" id="lat3" name="lat3">
+    Longitude: <input type="text" id="lon3" name="lon3"><br>
+
+    <h3>Extremidade 4</h3>
+    Latitude: <input type="text" id="lat4" name="lat4">
+    Longitude: <input type="text" id="lon4" name="lon4"><br>
+
+    <input type="button" value="Obter Coordenadas" onclick="getLocation()">
+    <input type="submit" value="Enviar">
+</form>
+
+<script>
+let count = 1;
+
+function getLocation() {
+    if (navigator.geolocation) {
+        // Aqui solicitamos alta precisão com enableHighAccuracy
+        navigator.geolocation.getCurrentPosition(saveCoordinates, showError, {
+            enableHighAccuracy: true,
+            timeout: 10000, // Tempo máximo para esperar as coordenadas
+            maximumAge: 0 // Não usar cache de localização
+        });
+    } else {
+        alert("Geolocalização não é suportada pelo seu navegador.");
+    }
+}
+
+function saveCoordinates(position) {
+    if (count <= 4) {
+        document.getElementById(`lat${count}`).value = position.coords.latitude;
+        document.getElementById(`lon${count}`).value = position.coords.longitude;
+        console.log("Precisão: " + position.coords.accuracy + " metros");
+        count++;
+    } else {
+        alert("As quatro extremidades já foram registradas.");
+    }
+}
+
+// Função para exibir erros
+function showError(error) {
+    switch(error.code) {
+        case error.PERMISSION_DENIED:
+            alert("Permissão negada. Ative a localização no seu navegador.");
+            break;
+        case error.POSITION_UNAVAILABLE:
+            alert("Localização indisponível.");
+            break;
+        case error.TIMEOUT:
+            alert("Tempo esgotado para obter localização.");
+            break;
+        case error.UNKNOWN_ERROR:
+            alert("Erro desconhecido.");
+            break;
+    }
+}
+</script>
