@@ -1,0 +1,76 @@
+<form id="coordinatesForm" action="/submit-room-coordinates" method="POST">
+    <h3>Extremidade 1</h3>
+    Latitude: <input type="text" id="lat1" name="lat1">
+    Longitude: <input type="text" id="lon1" name="lon1"><br>
+
+    <h3>Extremidade 2</h3>
+    Latitude: <input type="text" id="lat2" name="lat2">
+    Longitude: <input type="text" id="lon2" name="lon2"><br>
+
+    <h3>Extremidade 3</h3>
+    Latitude: <input type="text" id="lat3" name="lat3">
+    Longitude: <input type="text" id="lon3" name="lon3"><br>
+
+    <h3>Extremidade 4</h3>
+    Latitude: <input type="text" id="lat4" name="lat4">
+    Longitude: <input type="text" id="lon4" name="lon4"><br>
+
+    <input type="button" value="Obter Coordenadas" onclick="startTracking()">
+    <input type="submit" value="Enviar">
+</form>
+
+<script>
+let count = 1;
+let watchID;
+
+function startTracking() {
+    if (navigator.geolocation) {
+        watchID = navigator.geolocation.watchPosition(saveCoordinates, showError, {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        });
+    } else {
+        alert("Geolocalização não é suportada pelo seu navegador.");
+    }
+}
+
+function saveCoordinates(position) {
+    const accuracy = position.coords.accuracy;
+    
+    if (accuracy <= 5) { // Exige precisão de 5 metros ou menos
+        if (count <= 4) {
+            document.getElementById(`lat${count}`).value = position.coords.latitude;
+            document.getElementById(`lon${count}`).value = position.coords.longitude;
+            count++;
+            if (count > 4) {
+                stopTracking();
+                alert("As quatro extremidades foram registradas com precisão.");
+            }
+        }
+    } else {
+        alert(`A precisão atual é de ${accuracy} metros. Aguarde até melhorar.`);
+    }
+}
+
+function stopTracking() {
+    navigator.geolocation.clearWatch(watchID); // Para de monitorar a posição
+}
+
+function showError(error) {
+    switch(error.code) {
+        case error.PERMISSION_DENIED:
+            alert("Usuário negou a solicitação de Geolocalização.");
+            break;
+        case error.POSITION_UNAVAILABLE:
+            alert("Informações de localização estão indisponíveis.");
+            break;
+        case error.TIMEOUT:
+            alert("A solicitação de localização expirou.");
+            break;
+        case error.UNKNOWN_ERROR:
+            alert("Ocorreu um erro desconhecido.");
+            break;
+    }
+}
+</script>
